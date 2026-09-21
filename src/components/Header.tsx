@@ -29,6 +29,15 @@ export const Header: React.FC<HeaderProps> = ({
   const [showNewSessionModal, setShowNewSessionModal] = useState(false);
   const [newSessionName, setNewSessionName] = useState("");
   const [newSessionEvent, setNewSessionEvent] = useState<EventType>("333");
+  const currentEventSessions = sessions.filter(
+    (s) => s.event === currentSession.event
+  );
+
+  const handleOpenNewSessionModal = () => {
+    setNewSessionEvent(currentSession.event);
+    setNewSessionName("");
+    setShowNewSessionModal(true);
+  };
 
   const handleCreateSessionSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,7 +81,7 @@ export const Header: React.FC<HeaderProps> = ({
             onChange={(e) => onSelectSession(e.target.value)}
             className="h-8 bg-paper dark:bg-paper-dark text-sumi dark:text-paper font-mono text-sm px-2.5 border-1.5 border-sumi/20 dark:border-white/20 rounded hover:border-sumi dark:hover:border-white cursor-pointer transition-colors focus:outline-none max-w-[150px] truncate"
           >
-            {sessions.map((s) => (
+            {currentEventSessions.map((s) => (
               <option key={s.id} value={s.id} className="bg-paper dark:bg-[#1f1f23] text-sumi dark:text-paper font-mono">
                 {s.name}
               </option>
@@ -80,8 +89,8 @@ export const Header: React.FC<HeaderProps> = ({
           </select>
 
           <button
-            onClick={() => setShowNewSessionModal(true)}
-            title="Create new session"
+            onClick={handleOpenNewSessionModal}
+            title={`Create new session for ${currentSession.event}`}
             className="h-8 w-8 inline-flex items-center justify-center border-1.5 border-sumi/20 dark:border-white/20 rounded hover:border-sumi dark:hover:border-white hover:text-vermilion transition-colors"
           >
             <Plus size={16} />

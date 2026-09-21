@@ -187,28 +187,51 @@ export function App() {
     [sessions, refreshScramble]
   );
 
-  // Handler: Create Session
+  // Handler: Create Session (only created for the selected event)
   const handleCreateSession = useCallback(
     async (name: string, event: EventType) => {
       const newSession = await sessionRepo.create(name, event);
       setSessions((prev) => [...prev, newSession]);
-      handleSelectSession(newSession.id);
-      showToast(`Session "${name}" created`);
+
+      setCurrentSessionId(newSession.id);
+      await settingsRepo.updateSettings({ currentSessionId: newSession.id });
+      setSettings((prev) => ({ ...prev, currentSessionId: newSession.id }));
+
+      const sessionSolves = await solveRepo.getBySession(newSession.id);
+      setSolves(sessionSolves);
+      refreshScramble(newSession.event);
+      showToast(`Session "${name}" created for ${event}`);
     },
-    [handleSelectSession, showToast]
+    [refreshScramble, showToast]
   );
 
-  // Handler: Change Event for current session
+  // Handler: Change Event (switches to that event's session, or creates Main if none exists)
   const handleSelectEvent = useCallback(
-    async (event: EventType) => {
-      await sessionRepo.update(currentSession.id, currentSession.name, event);
-      setSessions((prev) =>
-        prev.map((s) => (s.id === currentSession.id ? { ...s, event } : s))
-      );
-      refreshScramble(event);
-      showToast(`Switched event to ${event}`);
+    async (newEvent: EventType) => {
+      if (newEvent === currentSession.event) return;
+
+      // Find existing sessions for this new event
+      const eventSessions = sessions.filter((s) => s.event === newEvent);
+
+      let targetSession: Session;
+      if (eventSessions.length > 0) {
+        targetSession = eventSessions[0];
+      } else {
+        // Create initial Main session for this new event
+        targetSession = await sessionRepo.create("Main", newEvent);
+        setSessions((prev) => [...prev, targetSession]);
+      }
+
+      setCurrentSessionId(targetSession.id);
+      await settingsRepo.updateSettings({ currentSessionId: targetSession.id });
+      setSettings((prev) => ({ ...prev, currentSessionId: targetSession.id }));
+
+      const sessionSolves = await solveRepo.getBySession(targetSession.id);
+      setSolves(sessionSolves);
+      refreshScramble(newEvent);
+      showToast(`Event: ${newEvent} (${targetSession.name})`);
     },
-    [currentSession, refreshScramble, showToast]
+    [currentSession.event, sessions, refreshScramble, showToast]
   );
 
   // Handler: Update Settings
