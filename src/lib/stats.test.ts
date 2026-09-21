@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatTime, calcMo3, calcAo5, calcTrimmedAverage, calculateSessionStats } from "./stats";
+import { formatTime, calcMo3, calcAo5, calcTrimmedAverage, calculateSessionStats, getTrimmedSolveIds } from "./stats";
 import { Solve } from "../types";
 
 function makeSolve(timeMs: number, penalty: "NONE" | "PLUS_TWO" | "DNF" = "NONE"): Solve {
@@ -120,9 +120,11 @@ describe("calculateSessionStats", () => {
     expect(stats.bestSingle).toBeNull();
     expect(stats.worstSingle).toBeNull();
     expect(stats.currentAo5).toBeNull();
+    expect(stats.currentAo5Record).toBeNull();
+    expect(stats.bestAo5Record).toBeNull();
   });
 
-  it("correctly identifies current, best, and worst single and ao5", () => {
+  it("correctly identifies current, best, and worst single and ao5, including solve records", () => {
     // Solves are stored newest first (solves[0] is latest)
     const s1 = makeSolve(14000);
     const s2 = makeSolve(11000);
@@ -141,5 +143,58 @@ describe("calculateSessionStats", () => {
     expect(stats.bestAo5).toBeDefined();
     expect(stats.worstAo5).toBeDefined();
     expect(stats.bestAo5).toBeLessThanOrEqual(stats.worstAo5!);
+
+    // Records verification
+    expect(stats.currentAo5Record).not.toBeNull();
+    expect(stats.currentAo5Record?.solves.length).toBe(5);
+    expect(stats.currentAo5Record?.value).toBe(stats.currentAo5);
+
+    expect(stats.bestAo5Record).not.toBeNull();
+    expect(stats.bestAo5Record?.solves.length).toBe(5);
+    expect(stats.bestAo5Record?.value).toBe(stats.bestAo5);
+
+    expect(stats.worstAo5Record).not.toBeNull();
+    expect(stats.worstAo5Record?.solves.length).toBe(5);
+    expect(stats.worstAo5Record?.value).toBe(stats.worstAo5);
+
+    expect(stats.currentMo3Record?.solves.length).toBe(3);
+    expect(stats.bestMo3Record?.solves.length).toBe(3);
+  });
+});
+
+describe("getTrimmedSolveIds", () => {
+  it("returns empty set for mo3 (count <= 3)", () => {
+    const s = [makeSolve(10000), makeSolve(11000), makeSolve(12000)];
+    expect(getTrimmedSolveIds(s, 3).size).toBe(0);
+  });
+
+  it("identifies fastest and slowest solves in regular ao5", () => {
+    const s1 = makeSolve(9000); // fastest
+    const s2 = makeSolve(10000);
+    const s3 = makeSolve(11000);
+    const s4 = makeSolve(12000);
+    const s5 = makeSolve(13000); // slowest
+    const solves = [s1, s2, s3, s4, s5];
+
+    const trimmed = getTrimmedSolveIds(solves, 5);
+    expect(trimmed.has(s1.id)).toBe(true);
+    expect(trimmed.has(s5.id)).toBe(true);
+    expect(trimmed.has(s2.id)).toBe(false);
+    expect(trimmed.has(s3.id)).toBe(false);
+    expect(trimmed.has(s4.id)).toBe(false);
+  });
+
+  it("identifies DNF as slowest and trims fastest in ao5 with 1 DNF", () => {
+    const s1 = makeSolve(9000); // fastest
+    const s2 = makeSolve(10000);
+    const s3 = makeSolve(11000);
+    const s4 = makeSolve(12000);
+    const sDnf = makeSolve(15000, "DNF"); // DNF
+    const solves = [s1, s2, s3, s4, sDnf];
+
+    const trimmed = getTrimmedSolveIds(solves, 5);
+    expect(trimmed.has(s1.id)).toBe(true);
+    expect(trimmed.has(sDnf.id)).toBe(true);
+    expect(trimmed.has(s2.id)).toBe(false);
   });
 });
