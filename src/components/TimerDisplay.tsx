@@ -9,6 +9,7 @@ interface TimerDisplayProps {
   inspectionPenalty: Penalty;
   timerUpdateMode: TimerDisplayMode;
   lastSolvePenalty: Penalty;
+  precision?: 2 | 3;
 }
 
 export const TimerDisplay: React.FC<TimerDisplayProps> = ({
@@ -18,6 +19,7 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
   inspectionPenalty,
   timerUpdateMode,
   lastSolvePenalty,
+  precision = 3,
 }) => {
   // Determine color according to state
   const getColorClass = () => {
@@ -59,13 +61,13 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
         return "•••";
       }
       if (timerUpdateMode === "seconds") {
-        return formatTime(displayTimeMs, "NONE", false).text;
+        return formatTime(displayTimeMs, "NONE", false, precision).text;
       }
-      return formatTime(displayTimeMs, "NONE", true).text;
+      return formatTime(displayTimeMs, "NONE", true, precision).text;
     }
 
     const penalty = timerState === "STOPPED" || timerState === "COOLDOWN" ? lastSolvePenalty : "NONE";
-    const formatted = formatTime(displayTimeMs, penalty, true);
+    const formatted = formatTime(displayTimeMs, penalty, true, precision);
     return formatted.text;
   };
 

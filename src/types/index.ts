@@ -60,6 +60,7 @@ export interface TimerSettings {
   timerUpdateMode: TimerDisplayMode;
   holdDurationMs: number;
   currentSessionId: string;
+  timePrecision: 2 | 3;
 }
 
 export type TimerState =

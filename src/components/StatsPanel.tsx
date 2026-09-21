@@ -3,21 +3,22 @@ import { SessionStats, formatTime } from "../lib/stats";
 
 interface StatsPanelProps {
   stats: SessionStats;
+  precision?: 2 | 3;
 }
 
-export const StatsPanel: React.FC<StatsPanelProps> = ({ stats }) => {
+export const StatsPanel: React.FC<StatsPanelProps> = ({ stats, precision = 3 }) => {
   const formatAverage = (val: number | null) => {
     if (val === null) return "-";
     if (val === -1) return "DNF";
-    return formatTime(val, "NONE", true).text;
+    return formatTime(val, "NONE", true, precision).text;
   };
 
   const statItems = [
     { label: "Solves", current: stats.totalCount.toString(), best: null },
     {
       label: "Single",
-      current: stats.bestSingle ? formatTime(stats.bestSingle.timeMs, stats.bestSingle.penalty).text : "-",
-      best: stats.worstSingle ? `Worst: ${formatTime(stats.worstSingle.timeMs, stats.worstSingle.penalty).text}` : null,
+      current: stats.bestSingle ? formatTime(stats.bestSingle.timeMs, stats.bestSingle.penalty, true, precision).text : "-",
+      best: stats.worstSingle ? `Worst: ${formatTime(stats.worstSingle.timeMs, stats.worstSingle.penalty, true, precision).text}` : null,
     },
     {
       label: "mo3",

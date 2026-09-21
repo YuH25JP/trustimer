@@ -16,7 +16,8 @@ export interface FormattedTime {
 export function formatTime(
   timeMs: number,
   penalty: Penalty = "NONE",
-  showMilliseconds = true
+  showMilliseconds = true,
+  precision: 2 | 3 = 3
 ): FormattedTime {
   if (penalty === "DNF") {
     return { text: "DNF", isDnf: true, isPlusTwo: false };
@@ -28,9 +29,6 @@ export function formatTime(
   const hours = Math.floor(totalMs / 3600000);
   const minutes = Math.floor((totalMs % 3600000) / 60000);
   const seconds = Math.floor((totalMs % 60000) / 1000);
-  const centiseconds = Math.floor((totalMs % 1000) / 10);
-
-  const csStr = centiseconds.toString().padStart(2, "0");
   const sStr = seconds.toString().padStart(minutes > 0 || hours > 0 ? 2 : 1, "0");
 
   let result = "";
@@ -44,7 +42,13 @@ export function formatTime(
   }
 
   if (showMilliseconds) {
-    result = `${result}.${csStr}`;
+    if (precision === 2) {
+      const centiseconds = Math.floor((totalMs % 1000) / 10);
+      result = `${result}.${centiseconds.toString().padStart(2, "0")}`;
+    } else {
+      const milliseconds = Math.floor(totalMs % 1000);
+      result = `${result}.${milliseconds.toString().padStart(3, "0")}`;
+    }
   }
 
   if (isPlusTwo) {

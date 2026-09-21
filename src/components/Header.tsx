@@ -227,6 +227,30 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             </div>
 
+            {/* Time Precision */}
+            <div>
+              <div className="font-medium text-sm mb-1.5">Time Precision (Decimals)</div>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { val: 3, label: "3 decimals (12.345 - ms)" },
+                  { val: 2, label: "2 decimals (12.34 - cs)" },
+                ].map((p) => (
+                  <button
+                    key={p.val}
+                    type="button"
+                    onClick={() => onUpdateSettings({ timePrecision: p.val as 2 | 3 })}
+                    className={`py-1.5 px-2 text-xs font-medium border-1.5 rounded transition-colors ${
+                      (settings.timePrecision || 3) === p.val
+                        ? "border-vermilion bg-vermilion/10 text-vermilion font-semibold"
+                        : "border-sumi/20 dark:border-white/20 hover:border-sumi dark:hover:border-white"
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Hold Duration */}
             <div>
               <div className="flex justify-between items-center mb-1">

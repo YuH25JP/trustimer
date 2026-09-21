@@ -9,6 +9,7 @@ interface UseKeyboardShortcutsProps {
   onRefreshScramble: () => void;
   onCopyTime: (timeText: string) => void;
   isTimerActive: boolean;
+  precision?: 2 | 3;
 }
 
 export function useKeyboardShortcuts({
@@ -18,6 +19,7 @@ export function useKeyboardShortcuts({
   onRefreshScramble,
   onCopyTime,
   isTimerActive,
+  precision = 3,
 }: UseKeyboardShortcutsProps) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -40,7 +42,7 @@ export function useKeyboardShortcuts({
         if (solves.length > 0) {
           e.preventDefault();
           const latest = solves[0];
-          const formatted = formatTime(latest.timeMs, latest.penalty);
+          const formatted = formatTime(latest.timeMs, latest.penalty, true, precision);
           onCopyTime(formatted.text);
         }
         return;

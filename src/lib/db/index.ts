@@ -314,6 +314,7 @@ export const settingsRepo = {
       timerUpdateMode: "all",
       holdDurationMs: 300,
       currentSessionId: "default-session",
+      timePrecision: 3,
     };
 
     const db = await getDb();
@@ -330,6 +331,7 @@ export const settingsRepo = {
           ? parseInt(settingsMap["hold_duration_ms"], 10)
           : defaultSettings.holdDurationMs,
         currentSessionId: settingsMap["current_session_id"] || defaultSettings.currentSessionId,
+        timePrecision: settingsMap["time_precision"] === "2" ? 2 : 3,
       };
     }
 
@@ -340,6 +342,7 @@ export const settingsRepo = {
         ? parseInt(mockStore.settings["hold_duration_ms"], 10)
         : defaultSettings.holdDurationMs,
       currentSessionId: mockStore.settings["current_session_id"] || defaultSettings.currentSessionId,
+      timePrecision: mockStore.settings["time_precision"] === "2" ? 2 : 3,
     };
   },
 
@@ -358,6 +361,9 @@ export const settingsRepo = {
     }
     if (settings.currentSessionId !== undefined) {
       pairs.push(["current_session_id", settings.currentSessionId]);
+    }
+    if (settings.timePrecision !== undefined) {
+      pairs.push(["time_precision", String(settings.timePrecision)]);
     }
 
     if (db) {

@@ -8,6 +8,7 @@ interface SolvesListProps {
   onDeleteSolve: (id: string) => void;
   onUpdatePenalty: (id: string, penalty: Penalty) => void;
   onCopyTime: (timeText: string) => void;
+  precision?: 2 | 3;
 }
 
 export const SolvesList: React.FC<SolvesListProps> = ({
@@ -15,6 +16,7 @@ export const SolvesList: React.FC<SolvesListProps> = ({
   onDeleteSolve,
   onUpdatePenalty,
   onCopyTime,
+  precision = 3,
 }) => {
   if (solves.length === 0) {
     return (
@@ -38,7 +40,7 @@ export const SolvesList: React.FC<SolvesListProps> = ({
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
         {solves.slice(0, 30).map((solve, idx) => {
           const indexNum = solves.length - idx;
-          const formatted = formatTime(solve.timeMs, solve.penalty);
+          const formatted = formatTime(solve.timeMs, solve.penalty, true, precision);
           const isLatest = idx === 0;
 
           return (

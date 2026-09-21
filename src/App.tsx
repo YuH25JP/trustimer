@@ -27,6 +27,7 @@ export function App() {
     timerUpdateMode: "all",
     holdDurationMs: 300,
     currentSessionId: "default-session",
+    timePrecision: 3,
   });
   const [currentScramble, setCurrentScramble] = useState<string>("");
   const [scrambleLoading, setScrambleLoading] = useState(false);
@@ -277,6 +278,7 @@ export function App() {
     onRefreshScramble: () => refreshScramble(),
     onCopyTime: copyToClipboard,
     isTimerActive,
+    precision: settings.timePrecision || 3,
   });
 
   const lastSolvePenalty = solves.length > 0 ? solves[0].penalty : "NONE";
@@ -316,16 +318,18 @@ export function App() {
           inspectionPenalty={inspectionPenalty}
           timerUpdateMode={settings.timerUpdateMode}
           lastSolvePenalty={lastSolvePenalty}
+          precision={settings.timePrecision || 3}
         />
 
         {/* Bottom Statistics and History (hidden during solve for focus) */}
         <div className={`w-full transition-opacity duration-150 ${timerState === "RUNNING" ? "opacity-0" : "opacity-100"}`}>
-          <StatsPanel stats={stats} />
+          <StatsPanel stats={stats} precision={settings.timePrecision || 3} />
           <SolvesList
             solves={solves}
             onDeleteSolve={handleDeleteSolve}
             onUpdatePenalty={handleUpdatePenalty}
             onCopyTime={copyToClipboard}
+            precision={settings.timePrecision || 3}
           />
         </div>
       </main>
