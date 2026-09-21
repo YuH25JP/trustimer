@@ -15,6 +15,7 @@ import { ScrambleDisplay } from "./components/ScrambleDisplay";
 import { TimerDisplay } from "./components/TimerDisplay";
 import { StatsPanel } from "./components/StatsPanel";
 import { SolvesList } from "./components/SolvesList";
+import { GraphPanel } from "./components/GraphPanel";
 import { Toast } from "./components/Toast";
 import "./App.css";
 
@@ -344,16 +345,34 @@ export function App() {
           precision={settings.timePrecision || 3}
         />
 
-        {/* Bottom Statistics and History (hidden during solve for focus) */}
-        <div className={`w-full transition-opacity duration-150 ${timerState === "RUNNING" ? "opacity-0" : "opacity-100"}`}>
+        {/* Bottom Statistics, History and Graph (hidden during solve for focus) */}
+        <div
+          className={`w-full max-w-4xl mx-auto flex flex-col gap-2 transition-opacity duration-150 ${
+            timerState === "RUNNING" ? "opacity-0" : "opacity-100"
+          }`}
+        >
           <StatsPanel stats={stats} precision={settings.timePrecision || 3} />
-          <SolvesList
-            solves={solves}
-            onDeleteSolve={handleDeleteSolve}
-            onUpdatePenalty={handleUpdatePenalty}
-            onCopyTime={copyToClipboard}
-            precision={settings.timePrecision || 3}
-          />
+
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 px-6 h-52 sm:h-56">
+            {/* Left: Solves List (Vertical) */}
+            <div className="md:col-span-5 lg:col-span-4 h-full min-h-0">
+              <SolvesList
+                solves={solves}
+                onDeleteSolve={handleDeleteSolve}
+                onUpdatePenalty={handleUpdatePenalty}
+                onCopyTime={copyToClipboard}
+                precision={settings.timePrecision || 3}
+              />
+            </div>
+
+            {/* Right: Graph Visualization */}
+            <div className="md:col-span-7 lg:col-span-8 h-full min-h-0">
+              <GraphPanel
+                solves={solves}
+                precision={settings.timePrecision || 3}
+              />
+            </div>
+          </div>
         </div>
       </main>
 
