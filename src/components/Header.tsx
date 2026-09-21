@@ -70,10 +70,10 @@ export const Header: React.FC<HeaderProps> = ({
           <select
             value={currentSession.id}
             onChange={(e) => onSelectSession(e.target.value)}
-            className="bg-paper dark:bg-paper-dark text-sumi dark:text-paper text-sm px-2.5 py-1 border-1.5 border-sumi/20 dark:border-white/20 rounded hover:border-sumi dark:hover:border-white cursor-pointer transition-colors focus:outline-none max-w-[150px] truncate"
+            className="bg-paper dark:bg-paper-dark text-sumi dark:text-paper font-mono text-sm px-2.5 py-1 border-1.5 border-sumi/20 dark:border-white/20 rounded hover:border-sumi dark:hover:border-white cursor-pointer transition-colors focus:outline-none max-w-[150px] truncate"
           >
             {sessions.map((s) => (
-              <option key={s.id} value={s.id} className="bg-paper dark:bg-[#1f1f23] text-sumi dark:text-paper">
+              <option key={s.id} value={s.id} className="bg-paper dark:bg-[#1f1f23] text-sumi dark:text-paper font-mono">
                 {s.name}
               </option>
             ))}
