@@ -13,32 +13,46 @@ export const StatsPanel: React.FC<StatsPanelProps> = ({ stats, precision = 3 }) 
     return formatTime(val, "NONE", true, precision).text;
   };
 
+  const formatSingle = (solve: typeof stats.currentSingle) => {
+    if (!solve) return "-";
+    return formatTime(solve.timeMs, solve.penalty, true, precision).text;
+  };
+
+  const formatBestWorst = (best: string, worst: string) => {
+    if (best === "-" && worst === "-") return "-";
+    return `${best} / ${worst}`;
+  };
+
   const statItems = [
-    { label: "Solves", current: stats.totalCount.toString(), best: null },
+    {
+      label: "Solves",
+      current: stats.totalCount.toString(),
+      sub: "-",
+    },
     {
       label: "Single",
-      current: stats.bestSingle ? formatTime(stats.bestSingle.timeMs, stats.bestSingle.penalty, true, precision).text : "-",
-      best: stats.worstSingle ? `Worst: ${formatTime(stats.worstSingle.timeMs, stats.worstSingle.penalty, true, precision).text}` : null,
+      current: formatSingle(stats.currentSingle),
+      sub: formatBestWorst(formatSingle(stats.bestSingle), formatSingle(stats.worstSingle)),
     },
     {
       label: "mo3",
       current: formatAverage(stats.currentMo3),
-      best: stats.bestMo3 !== null ? `Best: ${formatAverage(stats.bestMo3)}` : null,
+      sub: formatBestWorst(formatAverage(stats.bestMo3), formatAverage(stats.worstMo3)),
     },
     {
       label: "ao5",
       current: formatAverage(stats.currentAo5),
-      best: stats.bestAo5 !== null ? `Best: ${formatAverage(stats.bestAo5)}` : null,
+      sub: formatBestWorst(formatAverage(stats.bestAo5), formatAverage(stats.worstAo5)),
     },
     {
       label: "ao12",
       current: formatAverage(stats.currentAo12),
-      best: stats.bestAo12 !== null ? `Best: ${formatAverage(stats.bestAo12)}` : null,
+      sub: formatBestWorst(formatAverage(stats.bestAo12), formatAverage(stats.worstAo12)),
     },
     {
       label: "ao100",
       current: formatAverage(stats.currentAo100),
-      best: stats.bestAo100 !== null ? `Best: ${formatAverage(stats.bestAo100)}` : null,
+      sub: formatBestWorst(formatAverage(stats.bestAo100), formatAverage(stats.worstAo100)),
     },
   ];
 
@@ -53,11 +67,9 @@ export const StatsPanel: React.FC<StatsPanelProps> = ({ stats, precision = 3 }) 
             <div className="font-mono font-semibold text-sm sm:text-base text-sumi dark:text-paper mt-0.5">
               {item.current}
             </div>
-            {item.best && (
-              <div className="text-[10px] font-mono text-sumi/40 dark:text-paper/40 truncate">
-                {item.best}
-              </div>
-            )}
+            <div className="text-[10px] font-mono text-sumi/40 dark:text-paper/40 truncate">
+              {item.sub}
+            </div>
           </div>
         ))}
       </div>

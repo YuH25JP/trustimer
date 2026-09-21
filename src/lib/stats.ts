@@ -148,16 +148,21 @@ export function calcTrimmedAverage(
 
 export interface SessionStats {
   totalCount: number;
+  currentSingle: Solve | null;
   bestSingle: Solve | null;
   worstSingle: Solve | null;
   currentMo3: number | null;
   bestMo3: number | null;
+  worstMo3: number | null;
   currentAo5: number | null;
   bestAo5: number | null;
+  worstAo5: number | null;
   currentAo12: number | null;
   bestAo12: number | null;
+  worstAo12: number | null;
   currentAo100: number | null;
   bestAo100: number | null;
+  worstAo100: number | null;
 }
 
 export function calculateSessionStats(solves: Solve[]): SessionStats {
@@ -165,18 +170,25 @@ export function calculateSessionStats(solves: Solve[]): SessionStats {
   if (totalCount === 0) {
     return {
       totalCount: 0,
+      currentSingle: null,
       bestSingle: null,
       worstSingle: null,
       currentMo3: null,
       bestMo3: null,
+      worstMo3: null,
       currentAo5: null,
       bestAo5: null,
+      worstAo5: null,
       currentAo12: null,
       bestAo12: null,
+      worstAo12: null,
       currentAo100: null,
       bestAo100: null,
+      worstAo100: null,
     };
   }
+
+  const currentSingle = solves.length > 0 ? solves[0] : null;
 
   // Non-DNF solves for best/worst
   const nonDnfSolves = solves.filter((s) => s.penalty !== "DNF");
@@ -197,50 +209,63 @@ export function calculateSessionStats(solves: Solve[]): SessionStats {
   const currentAo12 = calcTrimmedAverage(solves, 12);
   const currentAo100 = calcTrimmedAverage(solves, 100);
 
-  // Calculate best averages by sliding window
+  // Calculate best and worst averages by sliding window
   let bestMo3: number | null = null;
+  let worstMo3: number | null = null;
   for (let i = 0; i <= solves.length - 3; i++) {
     const val = calcMo3(solves.slice(i, i + 3));
     if (val !== null && val > 0) {
       if (bestMo3 === null || val < bestMo3) bestMo3 = val;
+      if (worstMo3 === null || val > worstMo3) worstMo3 = val;
     }
   }
 
   let bestAo5: number | null = null;
+  let worstAo5: number | null = null;
   for (let i = 0; i <= solves.length - 5; i++) {
     const val = calcAo5(solves.slice(i, i + 5));
     if (val !== null && val > 0) {
       if (bestAo5 === null || val < bestAo5) bestAo5 = val;
+      if (worstAo5 === null || val > worstAo5) worstAo5 = val;
     }
   }
 
   let bestAo12: number | null = null;
+  let worstAo12: number | null = null;
   for (let i = 0; i <= solves.length - 12; i++) {
     const val = calcTrimmedAverage(solves.slice(i, i + 12), 12);
     if (val !== null && val > 0) {
       if (bestAo12 === null || val < bestAo12) bestAo12 = val;
+      if (worstAo12 === null || val > worstAo12) worstAo12 = val;
     }
   }
 
   let bestAo100: number | null = null;
+  let worstAo100: number | null = null;
   for (let i = 0; i <= solves.length - 100; i++) {
     const val = calcTrimmedAverage(solves.slice(i, i + 100), 100);
     if (val !== null && val > 0) {
       if (bestAo100 === null || val < bestAo100) bestAo100 = val;
+      if (worstAo100 === null || val > worstAo100) worstAo100 = val;
     }
   }
 
   return {
     totalCount,
+    currentSingle,
     bestSingle,
     worstSingle,
     currentMo3,
     bestMo3,
+    worstMo3,
     currentAo5,
     bestAo5,
+    worstAo5,
     currentAo12,
     bestAo12,
+    worstAo12,
     currentAo100,
     bestAo100,
+    worstAo100,
   };
 }

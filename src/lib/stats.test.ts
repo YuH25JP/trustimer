@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatTime, calcMo3, calcAo5, calcTrimmedAverage } from "./stats";
+import { formatTime, calcMo3, calcAo5, calcTrimmedAverage, calculateSessionStats } from "./stats";
 import { Solve } from "../types";
 
 function makeSolve(timeMs: number, penalty: "NONE" | "PLUS_TWO" | "DNF" = "NONE"): Solve {
@@ -109,5 +109,37 @@ describe("calcTrimmedAverage (ao12)", () => {
     const solves = times.map((t) => makeSolve(t));
     // trims 10s and 21s -> sum of 11..20 = 155 -> avg = 15.5s (15500)
     expect(calcTrimmedAverage(solves, 12)).toBe(15500);
+  });
+});
+
+describe("calculateSessionStats", () => {
+  it("returns all nulls/zeros when empty", () => {
+    const stats = calculateSessionStats([]);
+    expect(stats.totalCount).toBe(0);
+    expect(stats.currentSingle).toBeNull();
+    expect(stats.bestSingle).toBeNull();
+    expect(stats.worstSingle).toBeNull();
+    expect(stats.currentAo5).toBeNull();
+  });
+
+  it("correctly identifies current, best, and worst single and ao5", () => {
+    // Solves are stored newest first (solves[0] is latest)
+    const s1 = makeSolve(14000);
+    const s2 = makeSolve(11000);
+    const s3 = makeSolve(12000);
+    const s4 = makeSolve(9000);
+    const s5 = makeSolve(13000);
+    const s6 = makeSolve(15000);
+    const solves = [s1, s2, s3, s4, s5, s6];
+
+    const stats = calculateSessionStats(solves);
+    expect(stats.totalCount).toBe(6);
+    expect(stats.currentSingle?.timeMs).toBe(14000);
+    expect(stats.bestSingle?.timeMs).toBe(9000);
+    expect(stats.worstSingle?.timeMs).toBe(15000);
+    expect(stats.currentAo5).toBeDefined();
+    expect(stats.bestAo5).toBeDefined();
+    expect(stats.worstAo5).toBeDefined();
+    expect(stats.bestAo5).toBeLessThanOrEqual(stats.worstAo5!);
   });
 });
