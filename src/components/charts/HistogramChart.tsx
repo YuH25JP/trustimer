@@ -91,9 +91,9 @@ export const HistogramChart: React.FC<HistogramChartProps> = ({
               />
               <text
                 x={pad.left - 8}
-                y={y + 3.5}
+                y={y + 4}
                 textAnchor="end"
-                className="fill-sumi/40 dark:fill-paper/40 text-[10px] font-mono"
+                className="fill-sumi/50 dark:fill-paper/50 text-[11px] font-mono"
               >
                 {count}
               </text>
@@ -145,10 +145,10 @@ export const HistogramChart: React.FC<HistogramChartProps> = ({
                   x={x + barWidth / 2}
                   y={y - 4}
                   textAnchor="middle"
-                  className={`text-[9px] font-mono ${
+                  className={`text-[11px] font-mono ${
                     bin.isPeak
                       ? "fill-vermilion font-bold"
-                      : "fill-sumi/50 dark:fill-paper/50"
+                      : "fill-sumi/60 dark:fill-paper/60"
                   }`}
                 >
                   {bin.count}
@@ -163,27 +163,27 @@ export const HistogramChart: React.FC<HistogramChartProps> = ({
           <>
             <text
               x={pad.left}
-              y={height - pad.bottom + 16}
+              y={height - pad.bottom + 17}
               textAnchor="start"
-              className="fill-sumi/40 dark:fill-paper/40 text-[9px] font-mono"
+              className="fill-sumi/50 dark:fill-paper/50 text-[11px] font-mono"
             >
               {formatTime(bins[0].rangeStartMs, "NONE", true, 2).text}
             </text>
             {bins.length > 2 && (
               <text
                 x={pad.left + plotW / 2}
-                y={height - pad.bottom + 16}
+                y={height - pad.bottom + 17}
                 textAnchor="middle"
-                className="fill-sumi/40 dark:fill-paper/40 text-[9px] font-mono"
+                className="fill-sumi/50 dark:fill-paper/50 text-[11px] font-mono"
               >
                 {formatTime(bins[Math.floor(bins.length / 2)].rangeStartMs, "NONE", true, 2).text}
               </text>
             )}
             <text
               x={width - pad.right}
-              y={height - pad.bottom + 16}
+              y={height - pad.bottom + 17}
               textAnchor="end"
-              className="fill-sumi/40 dark:fill-paper/40 text-[9px] font-mono"
+              className="fill-sumi/50 dark:fill-paper/50 text-[11px] font-mono"
             >
               {formatTime(bins[bins.length - 1].rangeEndMs, "NONE", true, 2).text}
             </text>
@@ -207,7 +207,7 @@ export const HistogramChart: React.FC<HistogramChartProps> = ({
               x={getTimeX(meanMs)}
               y={pad.top - 6}
               textAnchor="middle"
-              className="fill-vermilion text-[9px] font-mono font-semibold"
+              className="fill-vermilion text-[11px] font-mono font-semibold"
             >
               Mean {formatTime(meanMs, "NONE", true, precision).text}
             </text>
@@ -234,23 +234,23 @@ export const HistogramChart: React.FC<HistogramChartProps> = ({
       {/* Modern Ink Tooltip */}
       {hoveredBin && mousePos && (
         <div
-          className="absolute pointer-events-none z-20 border-1.5 border-sumi/20 dark:border-white/20 bg-paper dark:bg-paper-dark px-2.5 py-1.5 rounded font-mono text-xs shadow-none"
+          className="absolute pointer-events-none z-20 border-1.5 border-sumi/20 dark:border-white/20 bg-paper dark:bg-paper-dark px-3 py-2 rounded font-mono shadow-none"
           style={{
             left: `${Math.min(
               mousePos.x + 12,
-              (containerRef.current?.clientWidth || 300) - 170
+              (containerRef.current?.clientWidth || 300) - 180
             )}px`,
-            top: `${Math.max(10, mousePos.y - 55)}px`,
+            top: `${Math.max(10, mousePos.y - 60)}px`,
           }}
         >
-          <div className="text-[10px] text-sumi/50 dark:text-paper/50 pb-1 border-b border-sumi/10 dark:border-white/10">
+          <div className="text-xs text-sumi/50 dark:text-paper/50 pb-1 border-b border-sumi/10 dark:border-white/10 font-medium">
             {hoveredBin.label}
           </div>
-          <div className="pt-1 flex items-center justify-between gap-4">
+          <div className="pt-1.5 flex items-center justify-between gap-4 text-xs">
             <span className="text-sumi/60 dark:text-paper/60">Count:</span>
-            <span className="font-bold text-sumi dark:text-paper">
+            <span className="font-bold text-sm text-sumi dark:text-paper">
               {hoveredBin.count}{" "}
-              <span className="text-[10px] font-normal text-sumi/50 dark:text-paper/50">
+              <span className="text-xs font-normal text-sumi/50 dark:text-paper/50">
                 ({hoveredBin.percentage}%)
               </span>
             </span>

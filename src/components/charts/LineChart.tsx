@@ -250,9 +250,9 @@ export const LineChart: React.FC<LineChartProps> = ({
               />
               <text
                 x={pad.left - 8}
-                y={y + 3.5}
+                y={y + 4}
                 textAnchor="end"
-                className="fill-sumi/40 dark:fill-paper/40 text-[10px] font-mono"
+                className="fill-sumi/50 dark:fill-paper/50 text-[11px] font-mono"
               >
                 {formatTime(tick, "NONE", true, 2).text}
               </text>
@@ -269,15 +269,15 @@ export const LineChart: React.FC<LineChartProps> = ({
               x2={width - pad.right}
               y2={getY(bestSingle)}
               stroke="#d64045"
-              strokeDasharray="4 4"
-              strokeWidth="1"
-              className="opacity-40"
+              strokeDasharray="5 3"
+              strokeWidth="1.5"
+              className="opacity-80"
             />
             <text
               x={width - pad.right}
-              y={getY(bestSingle) - 4}
+              y={getY(bestSingle) - 5}
               textAnchor="end"
-              className="fill-vermilion text-[9px] font-mono opacity-80"
+              className="fill-vermilion text-[11px] font-mono font-semibold"
             >
               PB {formatTime(bestSingle, "NONE", true, precision).text}
             </text>
@@ -300,18 +300,18 @@ export const LineChart: React.FC<LineChartProps> = ({
           <>
             <text
               x={getX(0, points.length)}
-              y={height - pad.bottom + 16}
+              y={height - pad.bottom + 17}
               textAnchor="start"
-              className="fill-sumi/40 dark:fill-paper/40 text-[10px] font-mono"
+              className="fill-sumi/50 dark:fill-paper/50 text-[11px] font-mono"
             >
               #{points[0].index}
             </text>
             {points.length > 2 && (
               <text
                 x={getX(Math.floor(points.length / 2), points.length)}
-                y={height - pad.bottom + 16}
+                y={height - pad.bottom + 17}
                 textAnchor="middle"
-                className="fill-sumi/40 dark:fill-paper/40 text-[10px] font-mono"
+                className="fill-sumi/50 dark:fill-paper/50 text-[11px] font-mono"
               >
                 #{points[Math.floor(points.length / 2)].index}
               </text>
@@ -319,9 +319,9 @@ export const LineChart: React.FC<LineChartProps> = ({
             {points.length > 1 && (
               <text
                 x={getX(points.length - 1, points.length)}
-                y={height - pad.bottom + 16}
+                y={height - pad.bottom + 17}
                 textAnchor="end"
-                className="fill-sumi/40 dark:fill-paper/40 text-[10px] font-mono"
+                className="fill-sumi/50 dark:fill-paper/50 text-[11px] font-mono"
               >
                 #{points[points.length - 1].index}
               </text>
@@ -441,24 +441,24 @@ export const LineChart: React.FC<LineChartProps> = ({
       {/* Modern Ink-style Tooltip */}
       {activePoint && mousePos && (
         <div
-          className="absolute pointer-events-none z-20 border-1.5 border-sumi/20 dark:border-white/20 bg-paper dark:bg-paper-dark px-2.5 py-1.5 rounded font-mono text-xs shadow-none transition-transform"
+          className="absolute pointer-events-none z-20 border-1.5 border-sumi/20 dark:border-white/20 bg-paper dark:bg-paper-dark px-3 py-2 rounded font-mono shadow-none transition-transform"
           style={{
             left: `${Math.min(
               mousePos.x + 12,
-              (containerRef.current?.clientWidth || 300) - 160
+              (containerRef.current?.clientWidth || 300) - 170
             )}px`,
-            top: `${Math.max(10, mousePos.y - 65)}px`,
+            top: `${Math.max(10, mousePos.y - 70)}px`,
           }}
         >
-          <div className="flex items-center justify-between gap-3 text-sumi/50 dark:text-paper/50 text-[10px] pb-1 border-b border-sumi/10 dark:border-white/10">
-            <span>#{activePoint.index}</span>
+          <div className="flex items-center justify-between gap-3 text-sumi/50 dark:text-paper/50 text-xs pb-1 border-b border-sumi/10 dark:border-white/10">
+            <span className="font-semibold">#{activePoint.index}</span>
             <span>{new Date(activePoint.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
           </div>
-          <div className="pt-1 space-y-0.5">
-            <div className="flex items-center justify-between gap-4">
+          <div className="pt-1.5 space-y-1">
+            <div className="flex items-center justify-between gap-4 text-xs">
               <span className="text-sumi/60 dark:text-paper/60">Time:</span>
               <span
-                className={`font-bold ${
+                className={`font-bold text-sm ${
                   activePoint.isDnf
                     ? "text-vermilion"
                     : activePoint.isPlusTwo
@@ -470,9 +470,9 @@ export const LineChart: React.FC<LineChartProps> = ({
               </span>
             </div>
             {showAo5 && activePoint.ao5 !== null && (
-              <div className="flex items-center justify-between gap-4">
-                <span className="text-vermilion text-[11px]">ao5:</span>
-                <span className="font-semibold text-vermilion text-[11px]">
+              <div className="flex items-center justify-between gap-4 text-xs">
+                <span className="text-vermilion font-medium">ao5:</span>
+                <span className="font-semibold text-vermilion">
                   {activePoint.ao5 === -1
                     ? "DNF"
                     : formatTime(activePoint.ao5, "NONE", true, precision).text}
@@ -480,9 +480,9 @@ export const LineChart: React.FC<LineChartProps> = ({
               </div>
             )}
             {showAo12 && activePoint.ao12 !== null && (
-              <div className="flex items-center justify-between gap-4">
-                <span className="text-[#0ea5e9] text-[11px]">ao12:</span>
-                <span className="font-semibold text-[#0ea5e9] text-[11px]">
+              <div className="flex items-center justify-between gap-4 text-xs">
+                <span className="text-[#0ea5e9] font-medium">ao12:</span>
+                <span className="font-semibold text-[#0ea5e9]">
                   {activePoint.ao12 === -1
                     ? "DNF"
                     : formatTime(activePoint.ao12, "NONE", true, precision).text}
