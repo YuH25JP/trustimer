@@ -53,10 +53,10 @@ export const Header: React.FC<HeaderProps> = ({
         <select
           value={currentSession.event}
           onChange={(e) => onSelectEvent(e.target.value as EventType)}
-          className="bg-paper dark:bg-paper-dark text-sumi dark:text-paper font-mono text-sm px-2.5 py-1 border-1.5 border-sumi/20 dark:border-white/20 rounded hover:border-sumi dark:hover:border-white cursor-pointer transition-colors focus:outline-none"
+          className="h-8 bg-paper dark:bg-paper-dark text-sumi dark:text-paper font-mono text-sm px-2.5 border-1.5 border-sumi/20 dark:border-white/20 rounded hover:border-sumi dark:hover:border-white cursor-pointer transition-colors focus:outline-none"
         >
           {SUPPORTED_EVENTS.map((ev) => (
-            <option key={ev.id} value={ev.id} className="bg-paper dark:bg-[#1f1f23] text-sumi dark:text-paper">
+            <option key={ev.id} value={ev.id} className="bg-paper dark:bg-[#1f1f23] text-sumi dark:text-paper font-mono">
               {ev.name}
             </option>
           ))}
@@ -65,12 +65,12 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Session selector & Action controls */}
       <div className="flex items-center gap-3">
-        {/* Session Select */}
+        {/* Session Select & Add Button */}
         <div className="flex items-center gap-1.5">
           <select
             value={currentSession.id}
             onChange={(e) => onSelectSession(e.target.value)}
-            className="bg-paper dark:bg-paper-dark text-sumi dark:text-paper font-mono text-sm px-2.5 py-1 border-1.5 border-sumi/20 dark:border-white/20 rounded hover:border-sumi dark:hover:border-white cursor-pointer transition-colors focus:outline-none max-w-[150px] truncate"
+            className="h-8 bg-paper dark:bg-paper-dark text-sumi dark:text-paper font-mono text-sm px-2.5 border-1.5 border-sumi/20 dark:border-white/20 rounded hover:border-sumi dark:hover:border-white cursor-pointer transition-colors focus:outline-none max-w-[150px] truncate"
           >
             {sessions.map((s) => (
               <option key={s.id} value={s.id} className="bg-paper dark:bg-[#1f1f23] text-sumi dark:text-paper font-mono">
@@ -82,7 +82,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={() => setShowNewSessionModal(true)}
             title="Create new session"
-            className="p-1 border-1.5 border-sumi/20 dark:border-white/20 rounded hover:border-sumi dark:hover:border-white hover:text-vermilion transition-colors"
+            className="h-8 w-8 inline-flex items-center justify-center border-1.5 border-sumi/20 dark:border-white/20 rounded hover:border-sumi dark:hover:border-white hover:text-vermilion transition-colors"
           >
             <Plus size={16} />
           </button>
@@ -94,7 +94,7 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={onToggleDarkMode}
           title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-          className="p-1.5 border-1.5 border-sumi/20 dark:border-white/20 rounded hover:border-sumi dark:hover:border-white transition-colors"
+          className="h-8 w-8 inline-flex items-center justify-center border-1.5 border-sumi/20 dark:border-white/20 rounded hover:border-sumi dark:hover:border-white transition-colors"
         >
           {darkMode ? <Sun size={16} /> : <Moon size={16} />}
         </button>
@@ -103,7 +103,7 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={() => setShowSettingsModal(true)}
           title="Settings"
-          className="p-1.5 border-1.5 border-sumi/20 dark:border-white/20 rounded hover:border-sumi dark:hover:border-white transition-colors"
+          className="h-8 w-8 inline-flex items-center justify-center border-1.5 border-sumi/20 dark:border-white/20 rounded hover:border-sumi dark:hover:border-white transition-colors"
         >
           <Settings size={16} />
         </button>
