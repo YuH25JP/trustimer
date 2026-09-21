@@ -53,10 +53,10 @@ export const Header: React.FC<HeaderProps> = ({
         <select
           value={currentSession.event}
           onChange={(e) => onSelectEvent(e.target.value as EventType)}
-          className="bg-transparent font-mono text-sm px-2.5 py-1 border-1.5 border-sumi/20 dark:border-white/20 rounded hover:border-sumi dark:hover:border-white cursor-pointer transition-colors focus:outline-none"
+          className="bg-paper dark:bg-paper-dark text-sumi dark:text-paper font-mono text-sm px-2.5 py-1 border-1.5 border-sumi/20 dark:border-white/20 rounded hover:border-sumi dark:hover:border-white cursor-pointer transition-colors focus:outline-none"
         >
           {SUPPORTED_EVENTS.map((ev) => (
-            <option key={ev.id} value={ev.id} className="bg-paper dark:bg-sumi-dark text-sumi dark:text-paper">
+            <option key={ev.id} value={ev.id} className="bg-paper dark:bg-[#1f1f23] text-sumi dark:text-paper">
               {ev.name}
             </option>
           ))}
@@ -70,10 +70,10 @@ export const Header: React.FC<HeaderProps> = ({
           <select
             value={currentSession.id}
             onChange={(e) => onSelectSession(e.target.value)}
-            className="bg-transparent text-sm px-2.5 py-1 border-1.5 border-sumi/20 dark:border-white/20 rounded hover:border-sumi dark:hover:border-white cursor-pointer transition-colors focus:outline-none max-w-[150px] truncate"
+            className="bg-paper dark:bg-paper-dark text-sumi dark:text-paper text-sm px-2.5 py-1 border-1.5 border-sumi/20 dark:border-white/20 rounded hover:border-sumi dark:hover:border-white cursor-pointer transition-colors focus:outline-none max-w-[150px] truncate"
           >
             {sessions.map((s) => (
-              <option key={s.id} value={s.id} className="bg-paper dark:bg-sumi-dark text-sumi dark:text-paper">
+              <option key={s.id} value={s.id} className="bg-paper dark:bg-[#1f1f23] text-sumi dark:text-paper">
                 {s.name}
               </option>
             ))}
@@ -143,10 +143,10 @@ export const Header: React.FC<HeaderProps> = ({
                 <select
                   value={newSessionEvent}
                   onChange={(e) => setNewSessionEvent(e.target.value as EventType)}
-                  className="w-full px-3 py-1.5 text-sm bg-transparent border-1.5 border-sumi/30 dark:border-white/30 rounded focus:border-sumi dark:focus:border-white focus:outline-none"
+                  className="w-full px-3 py-1.5 text-sm bg-paper dark:bg-paper-dark text-sumi dark:text-paper border-1.5 border-sumi/30 dark:border-white/30 rounded focus:border-sumi dark:focus:border-white focus:outline-none"
                 >
                   {SUPPORTED_EVENTS.map((ev) => (
-                    <option key={ev.id} value={ev.id} className="bg-paper dark:bg-sumi-dark">
+                    <option key={ev.id} value={ev.id} className="bg-paper dark:bg-[#1f1f23] text-sumi dark:text-paper">
                       {ev.name}
                     </option>
                   ))}

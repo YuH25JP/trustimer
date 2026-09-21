@@ -6,11 +6,13 @@
   :root {
     --bg-color: #f8f7f2;
     --text-color: #18181b;
+    color-scheme: light;
   }
 
   .dark {
     --bg-color: #141414;
     --text-color: #f0efe9;
+    color-scheme: dark;
   }
 
   body {
