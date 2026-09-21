@@ -22,11 +22,24 @@ export function useTimer({
   const [inspectionSeconds, setInspectionSeconds] = useState(15);
   const [inspectionPenalty, setInspectionPenalty] = useState<Penalty>("NONE");
 
-  // Refs for tracking precise timestamps and animation frames
+  // Keep latest prop values in refs to avoid recreating callbacks and re-triggering effects
+  const onSolveFinishedRef = useRef(onSolveFinished);
+  onSolveFinishedRef.current = onSolveFinished;
+
+  const inspectionEnabledRef = useRef(inspectionEnabled);
+  inspectionEnabledRef.current = inspectionEnabled;
+
+  const holdDurationMsRef = useRef(holdDurationMs);
+  holdDurationMsRef.current = holdDurationMs;
+
+  const timerUpdateModeRef = useRef(timerUpdateMode);
+  timerUpdateModeRef.current = timerUpdateMode;
+
+  // Refs for tracking timestamps and timers
   const startTimeRef = useRef<number>(0);
+  const cooldownUntilRef = useRef<number>(0);
   const rafIdRef = useRef<number | null>(null);
   const holdTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const cooldownTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Inspection tracking
   const inspectionStartRef = useRef<number>(0);
@@ -34,27 +47,34 @@ export function useTimer({
   const beep8PlayedRef = useRef(false);
   const beep12PlayedRef = useRef(false);
 
-  // Current state ref for event handlers to avoid stale closures
+  // Current state ref for synchronous event handling
   const stateRef = useRef(timerState);
   stateRef.current = timerState;
 
   const penaltyRef = useRef(inspectionPenalty);
   penaltyRef.current = inspectionPenalty;
 
-  // Clear all running timers
-  const clearAllTimers = useCallback(() => {
-    if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
-    if (holdTimeoutRef.current) clearTimeout(holdTimeoutRef.current);
-    if (cooldownTimeoutRef.current) clearTimeout(cooldownTimeoutRef.current);
-    if (inspectionIntervalRef.current) clearInterval(inspectionIntervalRef.current);
-  }, []);
-
-  // Stop inspection
+  // Stop inspection timer
   const stopInspection = useCallback(() => {
     if (inspectionIntervalRef.current) {
       clearInterval(inspectionIntervalRef.current);
       inspectionIntervalRef.current = null;
     }
+  }, []);
+
+  // Animation frame loop for timer display
+  const updateTimerLoop = useCallback(() => {
+    const now = performance.now();
+    const elapsed = now - startTimeRef.current;
+    const mode = timerUpdateModeRef.current;
+
+    if (mode === "all") {
+      setDisplayTimeMs(Math.round(elapsed));
+    } else if (mode === "seconds") {
+      setDisplayTimeMs(Math.floor(elapsed / 1000) * 1000);
+    }
+
+    rafIdRef.current = requestAnimationFrame(updateTimerLoop);
   }, []);
 
   // Stop running solve
@@ -67,18 +87,19 @@ export function useTimer({
     const finalElapsedMs = Math.round(elapsed);
     setDisplayTimeMs(finalElapsedMs);
     setTimerState("STOPPED");
+    cooldownUntilRef.current = performance.now() + 300; // 300ms lockout
 
     const penalty = penaltyRef.current;
-    onSolveFinished(finalElapsedMs, penalty);
+    onSolveFinishedRef.current(finalElapsedMs, penalty);
 
-    // Cooldown lockout to prevent accidental restart
-    cooldownTimeoutRef.current = setTimeout(() => {
-      setTimerState("IDLE");
+    // Transition back to IDLE after cooldown
+    setTimeout(() => {
+      setTimerState((prev) => (prev === "STOPPED" ? "IDLE" : prev));
       setInspectionPenalty("NONE");
     }, 300);
-  }, [onSolveFinished]);
+  }, []);
 
-  // Inspection tick
+  // Start inspection
   const startInspection = useCallback(() => {
     setTimerState("INSPECTING");
     inspectionStartRef.current = performance.now();
@@ -108,35 +129,22 @@ export function useTimer({
         setInspectionPenalty("PLUS_TWO");
         setInspectionSeconds(remaining);
       } else if (remaining < -2) {
-        // Exceeded 17 seconds -> Automatic DNF
+        // Exceeded 17s -> Automatic DNF
         stopInspection();
         setTimerState("STOPPED");
         setInspectionPenalty("DNF");
-        onSolveFinished(0, "DNF");
-        cooldownTimeoutRef.current = setTimeout(() => {
-          setTimerState("IDLE");
+        cooldownUntilRef.current = performance.now() + 500;
+        onSolveFinishedRef.current(0, "DNF");
+
+        setTimeout(() => {
+          setTimerState((prev) => (prev === "STOPPED" ? "IDLE" : prev));
           setInspectionPenalty("NONE");
         }, 500);
-        return;
       } else {
         setInspectionSeconds(remaining);
       }
     }, 100);
-  }, [onSolveFinished, stopInspection]);
-
-  // Animation frame loop for timer display
-  const updateTimerLoop = useCallback(() => {
-    const now = performance.now();
-    const elapsed = now - startTimeRef.current;
-
-    if (timerUpdateMode === "all") {
-      setDisplayTimeMs(Math.round(elapsed));
-    } else if (timerUpdateMode === "seconds") {
-      setDisplayTimeMs(Math.floor(elapsed / 1000) * 1000);
-    } // if "none", do not update displayTimeMs during solve
-
-    rafIdRef.current = requestAnimationFrame(updateTimerLoop);
-  }, [timerUpdateMode]);
+  }, [stopInspection]);
 
   // Start solve
   const startSolve = useCallback(() => {
@@ -145,25 +153,52 @@ export function useTimer({
     startTimeRef.current = performance.now();
     setDisplayTimeMs(0);
 
-    if (timerUpdateMode !== "none") {
+    if (timerUpdateModeRef.current !== "none") {
       rafIdRef.current = requestAnimationFrame(updateTimerLoop);
     }
-  }, [stopInspection, timerUpdateMode, updateTimerLoop]);
+  }, [stopInspection, updateTimerLoop]);
 
   // Keyboard handlers
   useEffect(() => {
     if (disabled) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore OS key repeats
+      // Ignore OS key repeat
       if (e.repeat) return;
 
-      const currentState = stateRef.current;
+      // Ignore if user is typing in an input or select
+      const activeEl = document.activeElement as HTMLElement | null;
+      if (
+        activeEl &&
+        (activeEl.tagName === "INPUT" ||
+          activeEl.tagName === "TEXTAREA" ||
+          activeEl.tagName === "SELECT")
+      ) {
+        return;
+      }
 
-      // Stop timer on any key when running
+      // If active element is a button, blur it so Space doesn't re-trigger button click
+      if (activeEl && activeEl.tagName === "BUTTON") {
+        activeEl.blur();
+      }
+
+      let currentState = stateRef.current;
+
+      // Self-healing: if stuck in STOPPED past the cooldown time, recover to IDLE
+      if (currentState === "STOPPED" && performance.now() >= cooldownUntilRef.current) {
+        currentState = "IDLE";
+        setTimerState("IDLE");
+      }
+
+      // Any key stops timer when running
       if (currentState === "RUNNING") {
         e.preventDefault();
         stopSolve();
+        return;
+      }
+
+      // Ignore keys during cooldown lockout
+      if (performance.now() < cooldownUntilRef.current) {
         return;
       }
 
@@ -175,33 +210,45 @@ export function useTimer({
           setTimerState("HOLDING");
           holdTimeoutRef.current = setTimeout(() => {
             setTimerState("READY");
-          }, holdDurationMs);
+          }, holdDurationMsRef.current);
         } else if (currentState === "INSPECTING") {
           setTimerState("INSPECTION_HOLDING");
           holdTimeoutRef.current = setTimeout(() => {
             setTimerState("INSPECTION_READY");
-          }, holdDurationMs);
+          }, holdDurationMsRef.current);
         }
       }
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
       if (e.code !== "Space") return;
+
+      // Ignore if user is in input/select
+      const activeEl = document.activeElement as HTMLElement | null;
+      if (
+        activeEl &&
+        (activeEl.tagName === "INPUT" ||
+          activeEl.tagName === "TEXTAREA" ||
+          activeEl.tagName === "SELECT")
+      ) {
+        return;
+      }
+
       const currentState = stateRef.current;
 
       if (currentState === "HOLDING") {
-        // Released space before hold duration completed
+        // Space released too early -> Cancel
         if (holdTimeoutRef.current) clearTimeout(holdTimeoutRef.current);
         setTimerState("IDLE");
       } else if (currentState === "READY") {
         // Space released after ready
-        if (inspectionEnabled) {
+        if (inspectionEnabledRef.current) {
           startInspection();
         } else {
           startSolve();
         }
       } else if (currentState === "INSPECTION_HOLDING") {
-        // Released space before hold completed in inspection
+        // Space released too early during inspection
         if (holdTimeoutRef.current) clearTimeout(holdTimeoutRef.current);
         setTimerState("INSPECTING");
       } else if (currentState === "INSPECTION_READY") {
@@ -216,17 +263,11 @@ export function useTimer({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
-      clearAllTimers();
+      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
+      if (holdTimeoutRef.current) clearTimeout(holdTimeoutRef.current);
+      stopInspection();
     };
-  }, [
-    disabled,
-    holdDurationMs,
-    inspectionEnabled,
-    clearAllTimers,
-    startInspection,
-    startSolve,
-    stopSolve,
-  ]);
+  }, [disabled, startInspection, startSolve, stopSolve, stopInspection]);
 
   return {
     timerState,
