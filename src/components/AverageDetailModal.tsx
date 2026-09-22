@@ -1,6 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { AverageRecord, formatTime, getTrimmedSolveIds } from "../lib/stats";
-import { X, Copy, Check } from "lucide-react";
+import { Copy, Check, X } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 interface AverageDetailModalProps {
   isOpen: boolean;
@@ -21,17 +30,7 @@ export const AverageDetailModal: React.FC<AverageDetailModalProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        onClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
-
-  if (!isOpen || !record) return null;
+  if (!record) return null;
 
   // Record.solves is stored newest-first. Reverse to chronological order (1st solve to Nth solve).
   const chronologicalSolves = [...record.solves].reverse();
@@ -65,53 +64,50 @@ export const AverageDetailModal: React.FC<AverageDetailModalProps> = ({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
-      onClick={onClose}
-    >
-      <div
-        className="bg-paper dark:bg-[#1a1a1e] border-1.5 border-sumi dark:border-paper rounded-lg p-5 w-full max-w-xl max-h-[85vh] flex flex-col space-y-4 shadow-none"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-xl max-h-[85vh] flex flex-col space-y-4" hideDefaultClose>
         {/* Header */}
-        <div className="flex items-center justify-between border-b-1.5 border-sumi/10 dark:border-white/10 pb-3">
-          <div className="flex items-baseline gap-2.5">
-            <span className="font-mono uppercase font-bold text-base tracking-wider text-sumi dark:text-paper">
-              {label}
-            </span>
-            <span className="text-xs font-mono font-medium px-2 py-0.5 rounded bg-sumi/5 dark:bg-white/10 text-sumi/70 dark:text-paper/70">
-              {kind}
-            </span>
-            <span className="font-mono font-bold text-lg text-vermilion ml-2">
-              {averageText}
-            </span>
+        <DialogHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-baseline gap-2.5">
+              <DialogTitle className="font-mono uppercase font-bold text-base tracking-wider text-sumi dark:text-paper">
+                {label}
+              </DialogTitle>
+              <span className="text-xs font-mono font-medium px-2 py-0.5 rounded bg-sumi/5 dark:bg-white/10 text-sumi/70 dark:text-paper/70">
+                {kind}
+              </span>
+              <span className="font-mono font-bold text-lg text-vermilion ml-2">
+                {averageText}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCopy}
+                title="Copy details to clipboard"
+                className="text-xs font-mono gap-1"
+              >
+                {copied ? (
+                  <>
+                    <Check size={14} className="text-green-600 dark:text-green-400" />
+                    <span className="text-green-600 dark:text-green-400">Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy size={14} />
+                    <span>Copy</span>
+                  </>
+                )}
+              </Button>
+              <DialogClose className="rounded p-1 text-sumi/60 dark:text-paper/60 hover:text-sumi dark:hover:text-paper transition-colors focus:outline-none focus:ring-1.5 focus:ring-vermilion cursor-pointer">
+                <X size={16} />
+                <span className="sr-only">Close</span>
+              </DialogClose>
+            </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={handleCopy}
-              title="Copy details to clipboard"
-              className="p-1.5 border-1.5 border-sumi/20 dark:border-white/20 rounded hover:border-sumi dark:hover:border-white text-sumi/70 dark:text-paper/70 hover:text-sumi dark:hover:text-paper transition-colors flex items-center gap-1 text-xs font-mono"
-            >
-              {copied ? (
-                <>
-                  <Check size={14} className="text-green-600 dark:text-green-400" />
-                  <span className="text-green-600 dark:text-green-400">Copied</span>
-                </>
-              ) : (
-                <>
-                  <Copy size={14} />
-                  <span>Copy</span>
-                </>
-              )}
-            </button>
-            <button
-              onClick={onClose}
-              className="p-1.5 text-sumi/60 dark:text-paper/60 hover:text-sumi dark:hover:text-paper transition-colors"
-            >
-              <X size={18} />
-            </button>
-          </div>
-        </div>
+        </DialogHeader>
 
         {/* Solves List */}
         <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
@@ -177,19 +173,16 @@ export const AverageDetailModal: React.FC<AverageDetailModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex justify-between items-center pt-2 border-t-1.5 border-sumi/10 dark:border-white/10 text-xs font-mono text-sumi/50 dark:text-paper/50">
+        <DialogFooter className="flex justify-between items-center text-xs font-mono text-sumi/50 dark:text-paper/50">
           <span>
             {chronologicalSolves.length} solves
             {trimmedIds.size > 0 && ` (${trimmedIds.size} trimmed)`}
           </span>
-          <button
-            onClick={onClose}
-            className="px-4 py-1.5 text-xs font-medium bg-sumi text-paper dark:bg-paper dark:text-sumi rounded hover:bg-vermilion dark:hover:bg-vermilion dark:hover:text-white transition-colors"
-          >
+          <Button variant="default" onClick={onClose}>
             Close
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };

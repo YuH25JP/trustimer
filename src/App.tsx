@@ -16,7 +16,8 @@ import { TimerDisplay } from "./components/TimerDisplay";
 import { StatsPanel } from "./components/StatsPanel";
 import { SolvesList } from "./components/SolvesList";
 import { GraphPanel } from "./components/GraphPanel";
-import { Toast } from "./components/Toast";
+import { Toaster } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import "./App.css";
 
 export function App() {
@@ -32,23 +33,13 @@ export function App() {
   });
   const [currentScramble, setCurrentScramble] = useState<string>("");
   const [scrambleLoading, setScrambleLoading] = useState(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [toastTimeoutId, setToastTimeoutId] = useState<ReturnType<typeof setTimeout> | null>(null);
   const [darkMode, setDarkMode] = useState<boolean>(true);
   const [initialized, setInitialized] = useState(false);
 
-  // Toast trigger helper
-  const showToast = useCallback(
-    (msg: string) => {
-      if (toastTimeoutId) clearTimeout(toastTimeoutId);
-      setToastMessage(msg);
-      const tid = setTimeout(() => {
-        setToastMessage(null);
-      }, 2000);
-      setToastTimeoutId(tid);
-    },
-    [toastTimeoutId]
-  );
+  // Toast trigger helper using sonner
+  const showToast = useCallback((msg: string) => {
+    toast(msg);
+  }, []);
 
   // Clipboard copy helper
   const copyToClipboard = useCallback(
@@ -235,11 +226,13 @@ export function App() {
     [currentSession.event, sessions, refreshScramble, showToast]
   );
 
-  // Handler: Update Settings
+  // Handler: Update Settings (Optimistic update for 0ms instant UI response)
   const handleUpdateSettings = useCallback(
-    async (newSettings: Partial<TimerSettings>) => {
-      await settingsRepo.updateSettings(newSettings);
+    (newSettings: Partial<TimerSettings>) => {
       setSettings((prev) => ({ ...prev, ...newSettings }));
+      settingsRepo.updateSettings(newSettings).catch((err) => {
+        console.error("Failed to update settings in DB:", err);
+      });
     },
     []
   );
@@ -377,7 +370,7 @@ export function App() {
       </main>
 
       {/* Subtle Toast notification */}
-      <Toast message={toastMessage} />
+      <Toaster />
     </div>
   );
 }

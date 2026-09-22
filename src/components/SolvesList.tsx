@@ -2,6 +2,7 @@ import React from "react";
 import { Solve, Penalty } from "../types";
 import { formatTime } from "../lib/stats";
 import { Trash2, Copy } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface SolvesListProps {
   solves: Solve[];
@@ -84,7 +85,9 @@ export const SolvesList: React.FC<SolvesListProps> = ({
 
               {/* Action buttons */}
               <div className="flex items-center gap-1 pl-1 shrink-0">
-                <button
+                <Button
+                  size="sm"
+                  variant={solve.penalty === "PLUS_TWO" ? "vermilion" : "outline"}
                   onClick={() =>
                     onUpdatePenalty(
                       solve.id,
@@ -92,15 +95,13 @@ export const SolvesList: React.FC<SolvesListProps> = ({
                     )
                   }
                   title="Toggle +2"
-                  className={`px-1.5 py-0.5 rounded text-[10px] font-medium border-1.5 transition-colors ${
-                    solve.penalty === "PLUS_TWO"
-                      ? "border-vermilion bg-vermilion text-white"
-                      : "border-sumi/20 dark:border-white/20 hover:border-sumi dark:hover:border-white text-sumi/70 dark:text-paper/70"
-                  }`}
+                  className="h-5 px-1.5 text-[10px] font-medium"
                 >
                   +2
-                </button>
-                <button
+                </Button>
+                <Button
+                  size="sm"
+                  variant={solve.penalty === "DNF" ? "vermilion" : "outline"}
                   onClick={() =>
                     onUpdatePenalty(
                       solve.id,
@@ -108,21 +109,19 @@ export const SolvesList: React.FC<SolvesListProps> = ({
                     )
                   }
                   title="Toggle DNF"
-                  className={`px-1.5 py-0.5 rounded text-[10px] font-medium border-1.5 transition-colors ${
-                    solve.penalty === "DNF"
-                      ? "border-vermilion bg-vermilion text-white"
-                      : "border-sumi/20 dark:border-white/20 hover:border-sumi dark:hover:border-white text-sumi/70 dark:text-paper/70"
-                  }`}
+                  className="h-5 px-1.5 text-[10px] font-medium"
                 >
                   DNF
-                </button>
-                <button
+                </Button>
+                <Button
+                  size="icon-sm"
+                  variant="ghost"
                   onClick={() => onDeleteSolve(solve.id)}
                   title="Delete solve"
-                  className="text-sumi/40 dark:text-paper/40 hover:text-vermilion transition-colors p-1 rounded hover:bg-sumi/10 dark:hover:bg-white/10"
+                  className="h-5 w-5 text-sumi/40 dark:text-paper/40 hover:text-vermilion hover:bg-sumi/10 dark:hover:bg-white/10"
                 >
-                  <Trash2 size={13} />
-                </button>
+                  <Trash2 size={12} />
+                </Button>
               </div>
             </div>
           );
