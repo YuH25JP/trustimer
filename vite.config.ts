@@ -29,4 +29,21 @@ export default defineConfig(() => ({
       ignored: ["**/src-tauri/**"],
     },
   },
+
+  // Web Worker configuration
+  worker: {
+    format: "es",
+  },
+
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules/cubing")) {
+            return "cubing";
+          }
+        },
+      },
+    },
+  },
 }));
