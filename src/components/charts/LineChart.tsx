@@ -21,8 +21,8 @@ export const LineChart: React.FC<LineChartProps> = ({
 
   // Chart dimensions in virtual viewBox coordinates
   const width = 600;
-  const height = 230;
-  const pad = { top: 20, right: 25, bottom: 25, left: 55 };
+  const height = 300;
+  const pad = { top: 20, right: 25, bottom: 28, left: 55 };
   const plotW = width - pad.left - pad.right;
   const plotH = height - pad.top - pad.bottom;
 
