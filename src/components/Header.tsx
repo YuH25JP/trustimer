@@ -76,10 +76,11 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="w-full flex items-center justify-between px-6 py-3 border-b-1.5 border-sumi/10 dark:border-white/10 select-none bg-paper dark:bg-paper-dark transition-colors">
       {/* Brand & Event Selector */}
       <div className="flex items-center gap-4">
-        <span className="font-bold tracking-tight text-lg flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-vermilion inline-block"></span>
-          Trustimer
-        </span>
+        <img
+          src="/trustimer_logo1.svg"
+          alt="trusTimer"
+          className="h-6 w-auto object-contain select-none"
+        />
 
         <div className="h-4 w-px bg-sumi/20 dark:bg-white/20"></div>
 
