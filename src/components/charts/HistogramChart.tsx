@@ -18,8 +18,8 @@ export const HistogramChart: React.FC<HistogramChartProps> = ({
   const { bins, totalValidCount, meanMs, medianMs, minMs, maxMs } = histogram;
 
   const width = 600;
-  const height = 230;
-  const pad = { top: 25, right: 25, bottom: 30, left: 45 };
+  const height = 300;
+  const pad = { top: 38, right: 25, bottom: 30, left: 45 };
   const plotW = width - pad.left - pad.right;
   const plotH = height - pad.top - pad.bottom;
 
@@ -205,7 +205,7 @@ export const HistogramChart: React.FC<HistogramChartProps> = ({
             />
             <text
               x={getTimeX(meanMs)}
-              y={pad.top - 6}
+              y={pad.top - 18}
               textAnchor="middle"
               className="fill-vermilion text-[11px] font-mono font-semibold"
             >
