@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { AverageRecord, formatTime, getTrimmedSolveIds } from "../lib/stats";
+import { formatDateTime } from "../lib/dateUtils";
 import { Copy, Check, X } from "lucide-react";
 import {
   Dialog,
@@ -115,11 +116,7 @@ export const AverageDetailModal: React.FC<AverageDetailModalProps> = ({
             const isTrimmed = trimmedIds.has(solve.id);
             const formatted = formatTime(solve.timeMs, solve.penalty, true, precision).text;
             const displayTime = isTrimmed ? `(${formatted})` : formatted;
-            const dateStr = new Date(solve.createdAt).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit",
-            });
+            const dateStr = formatDateTime(solve.createdAt);
 
             return (
               <div
