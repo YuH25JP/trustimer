@@ -4,7 +4,6 @@ import { formatTime } from "../lib/stats";
 
 interface UseKeyboardShortcutsProps {
   solves: Solve[];
-  onDeleteLastSolve: () => void;
   onTogglePenaltyLastSolve: (penalty: Penalty) => void;
   onRefreshScramble: () => void;
   onCopyTime: (timeText: string) => void;
@@ -14,7 +13,6 @@ interface UseKeyboardShortcutsProps {
 
 export function useKeyboardShortcuts({
   solves,
-  onDeleteLastSolve,
   onTogglePenaltyLastSolve,
   onRefreshScramble,
   onCopyTime,
@@ -59,13 +57,6 @@ export function useKeyboardShortcuts({
       if (solves.length === 0) return;
       const latest = solves[0];
 
-      // Delete / Backspace: Delete latest solve
-      if (e.key === "Delete" || e.key === "Backspace") {
-        e.preventDefault();
-        onDeleteLastSolve();
-        return;
-      }
-
       // 2: Toggle +2 penalty
       if (e.key === "2") {
         e.preventDefault();
@@ -89,7 +80,6 @@ export function useKeyboardShortcuts({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [
     solves,
-    onDeleteLastSolve,
     onTogglePenaltyLastSolve,
     onRefreshScramble,
     onCopyTime,

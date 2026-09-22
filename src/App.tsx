@@ -262,13 +262,6 @@ export function App() {
     []
   );
 
-  // Shortcuts: Delete latest solve
-  const handleDeleteLastSolve = useCallback(() => {
-    if (solves.length > 0) {
-      handleDeleteSolve(solves[0].id);
-    }
-  }, [solves, handleDeleteSolve]);
-
   // Shortcuts: Toggle penalty on latest solve
   const handleTogglePenaltyLastSolve = useCallback(
     (penalty: Penalty) => {
@@ -290,7 +283,6 @@ export function App() {
 
   useKeyboardShortcuts({
     solves,
-    onDeleteLastSolve: handleDeleteLastSolve,
     onTogglePenaltyLastSolve: handleTogglePenaltyLastSolve,
     onRefreshScramble: () => refreshScramble(),
     onCopyTime: copyToClipboard,
