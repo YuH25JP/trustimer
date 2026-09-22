@@ -1,6 +1,7 @@
 import React, { useState, useRef, useMemo, useCallback } from "react";
 import { TimeSeriesPoint } from "../../lib/graphStats";
 import { formatTime } from "../../lib/stats";
+import { formatDateShort } from "../../lib/dateUtils";
 
 interface LineChartProps {
   points: TimeSeriesPoint[];
@@ -452,7 +453,7 @@ export const LineChart: React.FC<LineChartProps> = ({
         >
           <div className="flex items-center justify-between gap-3 text-sumi/50 dark:text-paper/50 text-xs pb-1 border-b border-sumi/10 dark:border-white/10">
             <span className="font-semibold">#{activePoint.index}</span>
-            <span>{new Date(activePoint.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            <span>{formatDateShort(activePoint.createdAt)}</span>
           </div>
           <div className="pt-1.5 space-y-1">
             <div className="flex items-center justify-between gap-4 text-xs">
