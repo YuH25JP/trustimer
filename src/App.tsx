@@ -338,7 +338,7 @@ export function App() {
         >
           <StatsPanel stats={stats} precision={settings.timePrecision || 3} />
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 px-6 h-52 sm:h-56">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 px-6 h-72 sm:h-80">
             {/* Left: Solves List (Vertical) */}
             <div className="md:col-span-5 lg:col-span-4 h-full min-h-0">
               <SolvesList
