@@ -1,5 +1,6 @@
 import React from "react";
 import { RefreshCw, Copy } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ScrambleDisplayProps {
   scramble: string;
@@ -29,23 +30,27 @@ export const ScrambleDisplay: React.FC<ScrambleDisplayProps> = ({
       </div>
 
       <div className="flex items-center gap-2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={onRefresh}
           disabled={loading}
           title="New Scramble (Alt+N)"
-          className="flex items-center gap-1 text-xs px-2 py-1 text-sumi/60 dark:text-paper/60 hover:text-sumi dark:hover:text-paper hover:bg-sumi/5 dark:hover:bg-white/5 rounded transition-colors"
+          className="h-6 px-2 text-xs text-sumi/60 dark:text-paper/60"
         >
-          <RefreshCw size={13} className={loading ? "animate-spin" : ""} />
+          <RefreshCw size={13} className={loading ? "animate-spin mr-1" : "mr-1"} />
           <span>New</span>
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={onCopy}
           title="Copy Scramble"
-          className="flex items-center gap-1 text-xs px-2 py-1 text-sumi/60 dark:text-paper/60 hover:text-sumi dark:hover:text-paper hover:bg-sumi/5 dark:hover:bg-white/5 rounded transition-colors"
+          className="h-6 px-2 text-xs text-sumi/60 dark:text-paper/60"
         >
-          <Copy size={13} />
+          <Copy size={13} className="mr-1" />
           <span>Copy</span>
-        </button>
+        </Button>
       </div>
     </div>
   );
